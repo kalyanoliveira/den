@@ -162,7 +162,7 @@ let
       pt = providerType cnf;
     in
     lib.types.coercedTo (lib.types.addCheck lib.types.raw (
-      v: builtins.isFunction v && !isSubmoduleFn v
+      v: builtins.isFunction v && !isSubmoduleFn v && !isProviderFn v && !isOtherCtxFn v
     )) (fn: { includes = [ fn ]; }) pt;
 
   aspectsType =
