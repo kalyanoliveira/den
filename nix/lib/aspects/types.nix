@@ -132,7 +132,7 @@ let
             default = { };
             type = lib.types.submodule {
               freeformType = lib.types.lazyAttrsOf (
-                providerType (
+                coercedProviderType (
                   cnf
                   // {
                     providerPrefix = (cnf.providerPrefix or [ ]) ++ [ config.name ];
