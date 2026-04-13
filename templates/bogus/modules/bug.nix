@@ -2,23 +2,42 @@
 {
   flake.tests.bogus = {
 
-    test-something = denTest (
+    test-minimal-mixed-merge = denTest (
       {
         den,
         lib,
-        igloo, # igloo = nixosConfigurations.igloo.config
-        tuxHm, # tuxHm = igloo.home-manager.users.tux
+        igloo,
         ...
       }:
       {
-        # replace <system> if you are reporting a bug in MacOS
         den.hosts.x86_64-linux.igloo.users.tux = { };
 
-        # do something for testing
-        den.aspects.tux.user.description = "The Penguin";
+        imports =
+          let
+            # Bare function at _.sub
+            fn-def = {
+              den.aspects.bar._.sub = { host, ... }: {
+                nixos.networking.hostName = host.hostName;
+              };
+            };
 
-        expr = igloo.users.users.tux.description;
-        expected = "The Penguin";
+            # Plain attrset at the SAME _.sub
+            attrset-def = {
+              den.aspects.bar._.sub.nixos.programs.vim.enable = true;
+            };
+          in
+          [ fn-def attrset-def ];
+
+        den.aspects.igloo.includes = [ den.aspects.bar._.sub ];
+
+        expr = {
+          hostname = igloo.networking.hostName;
+          vim = igloo.programs.vim.enable;
+        };
+        expected = {
+          hostname = "igloo";
+          vim = true;
+        };
       }
     );
 
